@@ -1,12 +1,39 @@
+require "set"
+
+def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm = 165, country_of_origin = "UK", hobbies = ["coding"], no_of_pets = 0)
+
+  {name: full_name,
+  cohort: cohort,
+  height_cm: height_cm,
+  country_of_origin: country_of_origin,
+  hobbies: hobbies,
+  no_of_pets: no_of_pets}
+
+
+end
+
 def input_students
-  puts "Please enter the names of the students"
+  puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma, and use the full month name please."
   puts "To finish, just hit return twice"
   students = []
-  name = gets.chomp
-  while !name.empty? do
-    students << {name: name, cohort: :november}
-    puts "Now we have #{students.length} students"
-    name = gets.chomp
+  full_input = gets.chomp
+
+  months = Set[:January, :February, :March, :April, :May, :June, :July, :August, :September, :October, :November, :December]
+
+  while !full_input.empty? do
+    full_name, cohort = full_input.split(", ")
+    if cohort != nil && months.include?(cohort.capitalize.to_sym)
+      students << create_student(full_name, cohort.capitalize)
+    else
+      students << create_student(full_name)
+    end
+
+    if students.length == 1
+      puts "Now we have #{students.length} student"
+    else
+      puts "Now we have #{students.length} students"
+    end
+    full_input = gets.chomp
   end
   students
 end
@@ -35,7 +62,11 @@ def print_names(students)
 end
 
 def print_footer(students)
-  puts "In total, we have #{students.length} great students."
+  if students.length == 1
+    puts "In total, we have #{students.length} great student."
+  else
+    puts "In total, we have #{students.length} great students."
+  end
 end
 
 students = input_students
