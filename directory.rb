@@ -21,7 +21,12 @@ def print_names(students)
   puts "Choose 'all', or type a letter, or a number"
   input = gets.chomp
   if input == "all"
-    students.each_with_index { |student, i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort)"}
+    counter = 0
+    until counter == students.length
+      puts "#{counter + 1}. #{students[counter][:name]} (#{students[counter][:cohort]} cohort)"
+      counter += 1
+    end
+
   elsif input.to_i.is_a?(Integer) && input.to_i != 0
     students.each { |student| puts "#{student[:name]} (#{student[:cohort]} cohort)" if student[:name].length < input.to_i }
   elsif input.is_a?(String) && input.length == 1
