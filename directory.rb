@@ -11,3 +11,6 @@ puts "Freddy Kruegor"
 puts "The Joker"
 puts "Joffery Baratheon"
 puts "Norman Bates"
+print "Overall, we have "
+print 11
+puts " great students"
