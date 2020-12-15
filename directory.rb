@@ -50,7 +50,8 @@ def print_names(students)
   if input == "all"
     counter = 0
     until counter == students.length
-      puts "#{counter + 1}. #{students[counter][:name]} (#{students[counter][:cohort]} cohort)"
+      print "#{counter + 1}.".center(4)
+      puts "#{students[counter][:name]} (#{students[counter][:cohort]} cohort)"
       counter += 1
     end
 
