@@ -10,10 +10,9 @@ def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm
   no_of_pets: no_of_pets}
 end
 
-def input_students
+def input_students(students)
   puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma. Full or abbreviated month names are both fine."
   puts "To finish, just hit return twice"
-  students = []
   full_input = gets.delete!("\n")
 
 # A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
@@ -85,7 +84,35 @@ def print_footer(students)
   end
 end
 
-students = input_students
-print_header
-print_names(students)
-print_footer(students)
+def interactive_menu
+  students = []
+  loop do
+    puts "What would you like to do?"
+    puts "1. Input the students"
+    puts "2. Show the students"
+    puts "10. Exit"
+    selection = gets.chomp
+
+    case selection
+    when "1"
+      input_students(students)
+    when "2"
+      print_header
+      print_names(students)
+      print_footer(students)
+    when "10"
+      exit
+    else
+      puts "Not a valid choice! Please choose again."
+    end
+  end
+
+end
+
+
+
+# students = input_students
+# print_header
+# print_names(students)
+# print_footer(students)
+interactive_menu
