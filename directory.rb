@@ -14,7 +14,7 @@ def input_students
   puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma. Full or abbreviated month names are both fine."
   puts "To finish, just hit return twice"
   students = []
-  full_input = gets.chomp
+  full_input = gets.delete!("\n")
 
 # A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
   months = {January: ["Jan"], February: ["Feb"], March: ["Mar"], April: ["Apr"], May: ["May"], June: ["Jun"], July: ["Jul"],
@@ -49,7 +49,7 @@ end
 def print_names(students)
   puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
   puts "Choose 'all', 'cohort', or type a letter or a number"
-  input = gets.chomp
+  input = gets.delete!("\n")
   if input == "all"
     counter = 0
     until counter == students.length
