@@ -13,7 +13,7 @@ end
 def input_students
   puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma. Full or abbreviated month names are both fine."
   puts "To finish, just hit return twice"
-  full_input = gets.delete!("\n")
+  full_input = STDIN.gets.delete!("\n")
 
 # A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
   months = {January: ["Jan"], February: ["Feb"], March: ["Mar"], April: ["Apr"], May: ["May"], June: ["Jun"], July: ["Jul"],
@@ -35,7 +35,7 @@ def input_students
     else
       puts "Now we have #{@students.length} students"
     end
-    full_input = gets.chomp
+    full_input = STDIN.gets.chomp
   end
   @students
 end
@@ -50,7 +50,7 @@ def print_student_names
 
   puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
   puts "Choose 'all', 'cohort', or type a letter or a number"
-  input = gets.delete!("\n")
+  input = STDIN.gets.delete!("\n")
   if input == "all"
     counter = 0
     until counter == @students.length
@@ -87,7 +87,7 @@ end
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -131,10 +131,11 @@ def save_students
     file.puts csv_line
   end
   file.close
+  puts "Students saved to file."
 end
 
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
     student_name, cohort = line.chomp.split(",")
     @students << {name: student_name, cohort: cohort.to_sym}
@@ -142,4 +143,17 @@ def load_students
   file.close
 end
 
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.length} students from #{filename}."
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
+end
+
+try_load_students
 interactive_menu
