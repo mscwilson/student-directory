@@ -45,7 +45,7 @@ def print_header
   puts "-------------".center(100)
 end
 
-def print_names
+def print_student_names
   return if @students.empty?
 
   puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
@@ -88,18 +88,7 @@ def interactive_menu
   
   loop do
     print_menu
-    selection = gets.chomp
-
-    case selection
-    when "1"
-      input_students
-    when "2"
-      show_students
-    when "10"
-      exit
-    else
-      puts "Not a valid choice! Please choose again."
-    end
+    process(gets.chomp)
   end
 
 end
@@ -111,15 +100,23 @@ def print_menu
   puts "10. Exit"
 end
 
+def process(selection)
+  case selection
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "10"
+    exit
+  else
+    puts "Not a valid choice! Please choose again."
+  end
+end
+
 def show_students
   print_header
-  print_names
+  print_student_names
   print_footer
 end
 
-
-# students = input_students
-# print_header
-# print_names(students)
-# print_footer(students)
 interactive_menu
