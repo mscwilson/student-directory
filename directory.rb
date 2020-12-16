@@ -47,6 +47,8 @@ def print_header
 end
 
 def print_names(students)
+  return if students.empty?
+
   puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
   puts "Choose 'all', 'cohort', or type a letter or a number"
   input = gets.delete!("\n")
@@ -74,7 +76,9 @@ def print_names(students)
 end
 
 def print_footer(students)
-  if students.length == 1
+  if students.empty?
+    puts "No students are enrolled."
+  elsif students.length == 1
     puts "In total, we have #{students.length} great student."
   else
     puts "In total, we have #{students.length} great students."
