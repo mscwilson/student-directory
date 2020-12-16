@@ -1,4 +1,4 @@
-require "set"
+# require "set"
 
 def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm = 165, country_of_origin = "UK", hobbies = ["coding"], no_of_pets = 0)
 
@@ -13,17 +13,22 @@ def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm
 end
 
 def input_students
-  puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma, and use the full month name please."
+  puts "Please enter the names of the students.\nYou can optionally specify the cohort if it's not the current month - separate the cohort from the name with a comma. Full or abbreviated month names are both fine."
   puts "To finish, just hit return twice"
   students = []
   full_input = gets.chomp
 
-  months = Set[:January, :February, :March, :April, :May, :June, :July, :August, :September, :October, :November, :December]
+  # A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
+  months = {January: ["Jan"], February: ["Feb"], March: ["Mar"], April: ["Apr"], May: ["May"], June: ["Jun"], July: ["Jul"],
+            August: ["Aug"], September: ["Sept", "Sep"], October: ["Oct"], November: ["Nov"], December: ["Dec"]}
 
   while !full_input.empty? do
     full_name, cohort = full_input.split(", ")
     if cohort != nil && months.include?(cohort.capitalize.to_sym)
       students << create_student(full_name, cohort.capitalize)
+    elsif cohort != nil && months.any? { |k, v| v.include?(cohort.capitalize) }
+      unabbreviated_month = months.find { |k, v| v.include?(cohort.capitalize)}
+      students << create_student(full_name, unabbreviated_month[0])
     else
       students << create_student(full_name)
     end
@@ -39,8 +44,8 @@ def input_students
 end
 
 def print_header
-  puts "The students of Villains Academy"
-  puts "-------------"
+  puts "The students of Villains Academy".center(5)
+  puts "-------------".center(10)
 end
 
 def print_names(students)
