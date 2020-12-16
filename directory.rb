@@ -1,15 +1,13 @@
-# require "set"
 
+
+# Currently not using any of the other default student info aside from cohort
 def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm = 165, country_of_origin = "UK", hobbies = ["coding"], no_of_pets = 0)
-
   {name: full_name,
   cohort: cohort,
   height_cm: height_cm,
   country_of_origin: country_of_origin,
   hobbies: hobbies,
   no_of_pets: no_of_pets}
-
-
 end
 
 def input_students
@@ -18,10 +16,10 @@ def input_students
   students = []
   full_input = gets.chomp
 
-  # A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
+# A hash of months and their abbreviations. The values are arrays so that September could be abbreviated to Sep or Sept, because Sep seems weird to me
   months = {January: ["Jan"], February: ["Feb"], March: ["Mar"], April: ["Apr"], May: ["May"], June: ["Jun"], July: ["Jul"],
             August: ["Aug"], September: ["Sept", "Sep"], October: ["Oct"], November: ["Nov"], December: ["Dec"]}
-
+  
   while !full_input.empty? do
     full_name, cohort = full_input.split(", ")
     if cohort != nil && months.include?(cohort.capitalize.to_sym)
@@ -44,13 +42,13 @@ def input_students
 end
 
 def print_header
-  puts "The students of Villains Academy".center(5)
-  puts "-------------".center(10)
+  puts "The students of Villains Academy".center(100)
+  puts "-------------".center(100)
 end
 
 def print_names(students)
-  puts "Print out all names or a subset? You can print all names starting with a certain letter, or all names shorter than a particular number."
-  puts "Choose 'all', or type a letter, or a number"
+  puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
+  puts "Choose 'all', 'cohort', or type a letter or a number"
   input = gets.chomp
   if input == "all"
     counter = 0
@@ -58,6 +56,14 @@ def print_names(students)
       print "#{counter + 1}.".center(4)
       puts "#{students[counter][:name]} (#{students[counter][:cohort]} cohort)"
       counter += 1
+    end
+
+  elsif input == "cohort"
+    students.each_with_object(cohorts_list = []) { |dict, arr| arr << dict[:cohort]}
+    cohorts_list.uniq!.each do |month|
+      puts "#{month} cohort:"
+      students.each { |student| puts "- #{student[:name]}" if student[:cohort] == month }
+      puts
     end
 
   elsif input.to_i.is_a?(Integer) && input.to_i != 0
