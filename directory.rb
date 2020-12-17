@@ -1,5 +1,7 @@
 @students = []
 
+
+
 # Currently not using any of the other default student info aside from cohort
 def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm = 165, country_of_origin = "UK", hobbies = ["coding"], no_of_pets = 0)
   {name: full_name,
@@ -103,14 +105,19 @@ end
 def process(selection)
   case selection
   when "1"
+    puts "You have chosen to enter students."
     input_students
   when "2"
+    puts "You have chosen to view the current students."
     show_students
   when "3"
+    puts "You have chosen to save the current students to file."
     save_students
   when "4"
+    puts "You have chosen to load a saved students file."
     load_students
   when "10"
+    puts "See you next time!"
     exit
   else
     puts "Not a valid choice! Please choose again."
@@ -124,17 +131,30 @@ def show_students
 end
 
 def save_students
-  file = File.open("students.csv", "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  while true
+    puts "What would you like to name the file?"
+    filename = STDIN.gets.chomp
+    filename += ".csv" if filename.split(".").length == 1
+      
+    if filename.split(".")[1] == "csv"
+      file = File.open(filename, "w")
+      @students.each do |student|
+        student_data = [student[:name], student[:cohort]]
+        csv_line = student_data.join(",")
+        file.puts csv_line
+      end
+      file.close
+      puts "Students saved to file."
+      break
+    else
+      puts "Files will be stored in .csv format. Please enter a new filename with or without '.csv'."
+    end
   end
-  file.close
-  puts "Students saved to file."
 end
 
 def load_students(filename = "students.csv")
+  puts "Type the name of the .csv file would you like to load."
+  filename = STDIN.gets.chomp
   file = File.open(filename, "r")
   file.readlines.each do |line|
     student_name, cohort = line.chomp.split(",")
@@ -154,6 +174,7 @@ def try_load_students
     exit
   end
 end
+
 
 try_load_students
 interactive_menu
