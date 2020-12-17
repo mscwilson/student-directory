@@ -1,3 +1,4 @@
+require "csv"
 @students = []
 
 
@@ -43,7 +44,6 @@ end
 
 def print_student_names
   return if @students.empty?
-
   loop do
     puts "How would you like to display the names? Please choose by number."
     puts "1. In the order they were entered"
@@ -147,18 +147,16 @@ def save_students
   while true
     puts "What would you like to name the file?"
     filename = STDIN.gets.chomp
-    filename += ".csv" if filename.split(".").length == 1 # In case the user doesn't provide a file type
-      if filename.split(".")[1] == "csv" # if the file ending is correctly csv
-        file = File.open(filename, "w")
-        @students.each do |student|
-          student_data = [student[:name], student[:cohort]]
-          csv_line = student_data.join(",")
-          file.puts csv_line
+    filename += ".csv" if filename.split(".").length == 1 # In case the user doesn't provide a file type, add .csv ending
+      if filename.split(".")[1] == "csv" # if the file ending is csv, continue to save
+        CSV.open(filename, "w") do |csv| # saving to file
+          @students.each do |student|
+            csv << [student[:name], student[:cohort]]            
+          end
         end
-        file.close
         puts "Students saved to file."
         break
-      else # if they gave a filename like "students.txt" or something with the wrong ending
+      else # ask for input again if they gave a filename like "students.txt" or something with the wrong ending
         puts "Files will be stored in .csv format. Please enter a new filename with or without '.csv'."
       end
   end
@@ -170,15 +168,13 @@ def load_students(filename = "students.csv")
     possible_files = Dir.entries(".").select { |file| file.include?(".csv") }
     possible_files.each_with_index { |file, i| puts "#{i + 1}. #{file}" }
     puts "Which file would you like? Choose with number please."
-    filenumber_natural = STDIN.gets.chomp.to_i
+    filenumber_choice = STDIN.gets.chomp.to_i
 
-    if (1..possible_files.length).include?(filenumber_natural)
-      file = File.open(possible_files[filenumber_natural - 1], "r")
-      file.readlines.each do |line|
-        student_name, cohort = line.chomp.split(",")
+    if (1..possible_files.length).include?(filenumber_choice) # Checking they chose a possible option from the list of files
+      CSV.foreach(possible_files[filenumber_choice - 1]) do |line| # reading in file
+        student_name, cohort = line
         create_student(student_name, cohort.to_sym)
-      end
-      file.close
+      end           
       puts "Student file has been loaded."
       break
     else
