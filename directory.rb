@@ -94,6 +94,7 @@ def interactive_menu
 end
 
 def print_menu
+  puts
   puts "What would you like to do?"
   puts "1. Input students"
   puts "2. Show the students"
@@ -153,28 +154,57 @@ def save_students
 end
 
 def load_students(filename = "students.csv")
-  puts "Type the name of the .csv file would you like to load."
-  filename = STDIN.gets.chomp
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
-    student_name, cohort = line.chomp.split(",")
-    @students << {name: student_name, cohort: cohort.to_sym}
+  while true
+    puts "These are the available student data files:"
+    possible_files = Dir.entries(".").select { |file| file.include?(".csv") }
+    possible_files.each_with_index { |file, i| puts "#{i + 1}. #{file}" }
+    puts "Which file would you like? Choose with number please."
+    filenumber_natural = STDIN.gets.chomp.to_i
+
+    if (1..possible_files.length).include?(filenumber_natural)
+      file = File.open(possible_files[filenumber_natural - 1], "r")
+      file.readlines.each do |line|
+        student_name, cohort = line.chomp.split(",")
+        @students << {name: student_name, cohort: cohort.to_sym}
+      end
+      file.close
+      puts "Student file has been loaded."
+      break
+    else
+      puts "Please choose one of the listed files, by number."
+    end
   end
-  file.close
 end
 
 def try_load_students
   filename = ARGV.first
-  return if filename.nil?
-  if File.exists?(filename)
+  # return if filename.nil?
+  if !filename.nil? && File.exists?(filename)
     load_students(filename)
     puts "Loaded #{@students.length} students from #{filename}."
-  else
+  elsif !filename.nil? && !File.exists?(filename)
     puts "Sorry, #{filename} doesn't exist."
     exit
+  elsif filename.nil? && !Dir.entries(".").select { |file| file.include?(".csv") }.empty?
+    while true
+      puts "Do you want to load in an existing .csv file? y/n"
+      choice = STDIN.gets.chomp.downcase
+      if choice == "y"
+        load_students
+        puts "Loaded #{@students.length} students from 'students.csv'."
+        break
+      elsif choice == "n"
+        break
+      else
+        puts "That's not a valid choice."
+      end
+    end
   end
+
 end
 
 
 try_load_students
+puts "Welcome to the Villains Academy Student Management Portal".center(100)
+puts "-------------".center(100)
 interactive_menu
