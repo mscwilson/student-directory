@@ -1,15 +1,9 @@
 @students = []
 
 
-
-# Currently not using any of the other default student info aside from cohort
-def create_student(full_name, cohort = Time.now.strftime("%B").to_sym, height_cm = 165, country_of_origin = "UK", hobbies = ["coding"], no_of_pets = 0)
-  {name: full_name,
-  cohort: cohort,
-  height_cm: height_cm,
-  country_of_origin: country_of_origin,
-  hobbies: hobbies,
-  no_of_pets: no_of_pets}
+def create_student(full_name, cohort = Time.now.strftime("%B").to_sym)
+  # Default cohort is the current month
+  @students << {name: full_name, cohort: cohort}
 end
 
 def input_students
@@ -22,14 +16,14 @@ def input_students
             August: ["Aug"], September: ["Sept", "Sep"], October: ["Oct"], November: ["Nov"], December: ["Dec"]}
   
   while !full_input.empty? do
-    full_name, cohort = full_input.split(", ")
-    if cohort != nil && months.include?(cohort.capitalize.to_sym)
-      @students << create_student(full_name, cohort.capitalize)
-    elsif cohort != nil && months.any? { |k, v| v.include?(cohort.capitalize) }
-      unabbreviated_month = months.find { |k, v| v.include?(cohort.capitalize)}
-      @students << create_student(full_name, unabbreviated_month[0])
-    else
-      @students << create_student(full_name)
+    full_name, cohort = full_input.split(", ").map(&:capitalize!) # this will capitalise both month and name. Annoying to anyone who deliberately uses a lower case name
+    if cohort != nil && months.include?(cohort.to_sym) # Checking for month full name in hash keys
+      create_student(full_name, cohort.to_sym)
+    elsif cohort != nil && months.any? { |k, v| v.include?(cohort) } # Checking for month abbreviated name in hash values
+      unabbreviated_month = months.find { |k, v| v.include?(cohort) }
+      create_student(full_name, unabbreviated_month[0])
+    else 
+      create_student(full_name) # If a month isn't provided, the default cohort is used
     end
 
     if @students.length == 1
@@ -135,27 +129,26 @@ def save_students
   while true
     puts "What would you like to name the file?"
     filename = STDIN.gets.chomp
-    filename += ".csv" if filename.split(".").length == 1
-      
-    if filename.split(".")[1] == "csv"
-      file = File.open(filename, "w")
-      @students.each do |student|
-        student_data = [student[:name], student[:cohort]]
-        csv_line = student_data.join(",")
-        file.puts csv_line
+    filename += ".csv" if filename.split(".").length == 1 # In case the user doesn't provide a file type
+      if filename.split(".")[1] == "csv" # if the file ending is correctly csv
+        file = File.open(filename, "w")
+        @students.each do |student|
+          student_data = [student[:name], student[:cohort]]
+          csv_line = student_data.join(",")
+          file.puts csv_line
+        end
+        file.close
+        puts "Students saved to file."
+        break
+      else # if they gave a filename like "students.txt" or something with the wrong ending
+        puts "Files will be stored in .csv format. Please enter a new filename with or without '.csv'."
       end
-      file.close
-      puts "Students saved to file."
-      break
-    else
-      puts "Files will be stored in .csv format. Please enter a new filename with or without '.csv'."
-    end
   end
 end
 
 def load_students(filename = "students.csv")
   while true
-    puts "These are the available student data files:"
+    puts "These are the available student data files:" # Lists all csv files in the directory
     possible_files = Dir.entries(".").select { |file| file.include?(".csv") }
     possible_files.each_with_index { |file, i| puts "#{i + 1}. #{file}" }
     puts "Which file would you like? Choose with number please."
@@ -165,7 +158,7 @@ def load_students(filename = "students.csv")
       file = File.open(possible_files[filenumber_natural - 1], "r")
       file.readlines.each do |line|
         student_name, cohort = line.chomp.split(",")
-        @students << {name: student_name, cohort: cohort.to_sym}
+        create_student(student_name, cohort.to_sym)
       end
       file.close
       puts "Student file has been loaded."
@@ -177,7 +170,7 @@ def load_students(filename = "students.csv")
 end
 
 def try_load_students
-  filename = ARGV.first
+  filename = ARGV.first # This will be present if a filename was given as argument when this directory file was run
   # return if filename.nil?
   if !filename.nil? && File.exists?(filename)
     load_students(filename)
@@ -185,22 +178,21 @@ def try_load_students
   elsif !filename.nil? && !File.exists?(filename)
     puts "Sorry, #{filename} doesn't exist."
     exit
-  elsif filename.nil? && !Dir.entries(".").select { |file| file.include?(".csv") }.empty?
+  elsif filename.nil? && !Dir.entries(".").select { |file| file.include?(".csv") }.empty? # Choosing an existing file if no argument was given
     while true
-      puts "Do you want to load in an existing .csv file? y/n"
+      puts "Do you want to load in an existing .csv file? Yes or no."
       choice = STDIN.gets.chomp.downcase
-      if choice == "y"
+      if choice == "y" || choice == "yes"
         load_students
         puts "Loaded #{@students.length} students from 'students.csv'."
         break
-      elsif choice == "n"
+      elsif choice == "n" || choice == "no"
         break
       else
         puts "That's not a valid choice."
       end
     end
   end
-
 end
 
 
