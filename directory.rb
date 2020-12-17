@@ -44,29 +44,47 @@ end
 def print_student_names
   return if @students.empty?
 
-  puts "Print out all names or a subset? You can print by cohort, or all names starting with a certain letter, or all names shorter than a particular number."
-  puts "Choose 'all', 'cohort', or type a letter or a number"
-  input = STDIN.gets.delete!("\n")
-  if input == "all"
-    counter = 0
-    until counter == @students.length
-      print "#{counter + 1}.".center(4)
-      puts "#{@students[counter][:name]} (#{@students[counter][:cohort]} cohort)"
-      counter += 1
-    end
+  loop do
+    puts "How would you like to display the names? Please choose by number."
+    puts "1. In the order they were entered"
+    puts "2. By cohort"
+    puts "3. Display only students whose names begin with a certain letter"
+    input = STDIN.gets.chomp
 
-  elsif input == "cohort"
-    @students.each_with_object(cohorts_list = []) { |dict, arr| arr << dict[:cohort]}
-    cohorts_list.uniq!.each do |month|
-      puts "#{month} cohort:"
-      @students.each { |student| puts "- #{student[:name]}" if student[:cohort] == month }
-      puts
-    end
+    if input == "1"
+      puts "These are all the enrolled students:"
+      @students.each_with_index do |student, i|
+        print "#{i + 1}.".center(4)
+        puts "#{@students[i][:name]} (#{@students[i][:cohort]} cohort)"
+      end
+      break
 
-  elsif input.to_i.is_a?(Integer) && input.to_i != 0
-    @students.each { |student| puts "#{student[:name]} (#{student[:cohort]} cohort)" if student[:name].length < input.to_i }
-  elsif input.is_a?(String) && input.length == 1
-    @students.each { |student| puts "#{student[:name]} (#{student[:cohort]} cohort)" if student[:name][0].downcase == input.downcase }
+    elsif input == "2"
+      puts "These are all the enrolled students, listed by cohort:"
+      @students.each_with_object(cohorts_list = []) { |dict, arr| arr << dict[:cohort]}
+      cohorts_list.uniq!.each do |month|
+        puts "#{month} cohort:"
+        @students.each { |student| puts "- #{student[:name]}" if student[:cohort] == month }
+        puts
+      end
+      break
+
+    elsif input == "3"
+      puts "Which names are you interested in? Please enter a letter."
+      input = STDIN.gets.chomp
+      puts "Here are the students beginning with: #{input[0].upcase}"
+      @students.each_with_object(names = []) do |student, arr|
+        if student[:name][0].downcase == input[0].downcase
+          puts "#{student[:name]} (#{student[:cohort]} cohort)"
+          arr << student[:name] # storing the names here so can check if there were any, for the following puts line
+        end
+      end
+      puts "Sorry, no students have names beginning with that character." if names.empty?
+      break
+ 
+    else
+      puts "That's not a valid choice."
+    end
   end
 end
 
