@@ -11,7 +11,7 @@ Requires Ruby 2.6+ (3.0.0 works fine).
 * Play with the code in the IRB REPL
 
 This screenshot gives an example of how it looks in IRB:
-[student directory](student-directory.png)
+![student directory](student-directory.png)
 
 ### Known Issues
 The capitalisation of the student names is lost as they are entered.
