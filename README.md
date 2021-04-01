@@ -14,5 +14,7 @@ This screenshot gives an example of how it looks in IRB:
 ![student directory](student-directory.png)
 
 ### Known Issues
-The capitalisation of the student names is lost as they are entered.
-Currently, specifying a cohort doesn't work - all students are entered with the current month.
+* The capitalisation of the student names is lost as they are entered.  
+* Currently, specifying a cohort doesn't work - all students are entered with the current month.  
+* The choice "exit" is number 10 in the list though there are only 4 other choices.
+
